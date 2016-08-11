@@ -2,6 +2,8 @@
 
 Google Places Autocomplete attached to a paper-input, providing a convenient material design input for places.
 
+[Live Demo](https://mlisook.github.io/paper-input-place/)
+
 Basic use:
 
 ```html
