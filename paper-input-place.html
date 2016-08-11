@@ -1,0 +1,414 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html" />
+<link rel="import" href="../google-apis/google-maps-api.html" />
+<link rel="import" href="../iron-icons/iron-icons.html" />
+<link rel="import" href="../iron-icon/iron-icon.html" />
+
+<!--
+`paper-input-place`
+Google Places Autocomplete attached to paper-input
+
+@demo demo/index.html
+-->
+
+<dom-module id="paper-input-place">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+    </style>
+    <template is="dom-if" if="[[apiKey]]" restamp="true">
+      <google-maps-api api-key="[[apiKey]]" on-api-load="_mapsApiLoaded"></google-maps-api>
+      <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="Invalid - please select a place">
+        <iron-icon icon="clear" suffix on-tap="_clearLocation"></iron-icon>
+      </paper-input>
+    </template>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'paper-input-place',
+
+      properties: {
+        /**
+         * Required: A Maps API key. To obtain an API key, see developers.google.com/maps/documentation/javascript/tutorial#api_key.
+         */
+        apiKey: {
+          type: String,
+          notify: true
+        },
+        /**
+         * true if the control is disabled
+         */
+        disabled: {
+          type: Boolean,
+          notify: true,
+          value: false
+        },
+        /** @private */
+        _geocoder: {
+          type: Object
+        },
+        /**
+         * True if the entered text is not valid - i.e. not a selected place and not previously geocoded
+         */
+        invalid: {
+          type: Boolean,
+          notify: true,
+          readOnly: true,
+          value: false
+        },
+        /**
+         * Internal representation of invalid, True if the entered text is not valid - i.e. not a selected place and not previously geocoded
+         */
+        _invalid: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * Floating label for paper-input
+         * @type {String}
+         */
+        label: {
+          type: String,
+          notify: true,
+          value: ""
+        },
+        /**
+         * an object - { lat: number, lng: number } - representing the geolocation of the
+         * entered / selected place
+         */
+        latLng: {
+          type: Object,
+          notify: true,
+          readOnly: true,
+          value: function() {
+            return {
+              lat: 0,
+              lng: 0
+            }
+          }
+        },
+        /**
+         * An object containing the place selected or geocoded:
+         * ```
+         *   place_id
+         *   formatted_address
+         *   latLng { lat: lng: }
+         *   search
+         *   basic:
+         *     name
+         *     address
+         *     city
+         *     state
+         *     stateCode
+         *     postalCode
+         *     country
+         *     countryCode
+         *     phone
+         *   placeDetails: additional properties from the google place result
+         *```
+         */
+        place: {
+          type: Object,
+          notify: true,
+          readOnly: true,
+          value: function() {
+            return {};
+          }
+        },
+        /** @private */
+        _places: {
+          type: Object
+        },
+        /**
+         * true if the entry is a required field
+         */
+        required: {
+          type: Boolean,
+          notify: true,
+          value: false
+        },
+        /**
+         * An object representing the initial or returned value of the control.
+         * ```
+         * Properties:
+         *   search:  string - the search string
+         *   place_id:  string - the google maps place_id
+         *   latLng:  object {lat: number, lng: number} - latitude/Longitude
+         *```
+         */
+        value: {
+          type: Object,
+          notify: true,
+          observer: '_valueChanged'
+        },
+        /** @private */
+        _value: {
+          type: String,
+          notify: true,
+          value: "",
+          observer: '_svalChanged'
+        }
+
+      },
+
+      ready: function() {
+        var apiElement = this.$$('google-maps-api');
+        if (apiElement && apiElement.libraryLoaded) {
+          this._mapsApiLoaded();
+        }
+      },
+
+      _mapsApiLoaded: function() {
+        this._geocoder = new google.maps.Geocoder();
+        this._places = new google.maps.places.Autocomplete(this.$$('#locationsearch').inputElement, {});
+        google.maps.event.addListener(this._places, 'place_changed', this._onChangePlace.bind(this));
+      },
+
+      _valueChanged: function(newValue, oldValue) {
+        // update the search term and the invalid flag if the value is being set for the first time,
+        // or if the value has changed and is not the same as the search term
+        if (!oldValue || (newValue.search !== oldValue.search || newValue.search !== this._value)) {
+          this._value = newValue && newValue.search ? newValue.search : "";
+          this._invalid = !newValue || !(newValue.place_id && newValue.latLng && newValue.latLng.lat && newValue.latLng.lng);
+          this._setInvalid(this.required ? this._invalid : this._invalid && (newValue && newValue.search));
+        }
+      },
+
+      _svalChanged: function(newValue, oldValue) {
+        // reset the invalid property if the user has typed in the input field
+
+        // if the newValue matches the selected place, which could happen if
+        // the user types after selecting a place, then deletes the typing
+        if (newValue && this.place && this.place.search && newValue == this.place.search) {
+          this.value = {
+            place_id: this.place.place_id,
+            search: newValue,
+            latLng: {
+              lat: this.place.latLng.lat,
+              lng: this.place.latLng.lng
+            }
+          };
+          this._invalid = false;
+          this._setInvalid(false);
+          return;
+        }
+        // if blank and not a required input
+        if (!newValue && !this.required) {
+          this.value = {
+            place_id: "",
+            search: "",
+            latLng: {
+              lat: 0,
+              lng: 0
+            }
+          };
+          this._setPlace({});
+          this._invalid = true;
+          this._setInvalid(false);
+          return;
+        }
+        // if the existing value is blank, and the new value is not
+        if ((!this.value || !this.value.search) && newValue) {
+          this.value = {
+            place_id: "",
+            search: newValue,
+            latLng: {
+              lat: 0,
+              lng: 0
+            }
+          };
+          this._setPlace({});
+          this._invalid = true;
+          this._setInvalid(true);
+          return;
+        }
+        // otherwise, the value is invalid
+        this.value = {
+          place_id: "",
+          search: newValue,
+          latLng: {
+            lat: 0,
+            lng: 0
+          }
+        };
+        this._setPlace({});
+        this._invalid = true;
+        this._setInvalid(true);
+        return;
+
+      },
+
+      _clearLocation: function(e) {
+        this._value = "";
+      },
+      /**
+       * Geocodes an address
+       * @param  {string} address address to be geocoded
+       * @param  {object} options Optional - Geocoder Request options
+       * @return {Promise<place>}         A promise for a place object or a status on failure
+       */
+      geocode: function(address, options) {
+        return new Promise(function(resolve, reject) {
+          var opts = options ? options : {};
+          opts.address = address ? address : "";
+          this._geocoder.geocode(opts, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK && results && results[0]) {
+              var p = this._extractPlaceInfo(results[0], opts.address);
+              resolve(p);
+            } else {
+              reject(status);
+            }
+          }.bind(this));
+        }.bind(this));
+      },
+      /**
+       * Reverse Geocodes a latLng
+       * @param  {object} latlng latitude/Longitude {lat: , lng: } to be reverse geocoded
+       * @param  {object} options Optional - Geocoder Request options
+       * @return {Promise<place>}         A promise for a place object or a status on failure
+       */
+      reverseGeocode: function(latlng, options) {
+        return new Promise(function(resolve, reject) {
+          var opts = options? options: {};
+          if (latlng) {
+            opts.location = latlng;
+          }
+          this._geocoder.geocode(opts, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK && results && results[0]) {
+              var p = this._extractPlaceInfo(results[0], "");
+              resolve(p);
+            } else {
+              reject(status);
+            }
+          }.bind(this));
+        }.bind(this));
+      },
+
+      _onChangePlace: function(e) {
+        var pl = this._places.getPlace();
+        if (pl.geometry) {
+          var p = this._extractPlaceInfo(pl, this.$$('paper-input').inputElement.value);
+          this._setPlace(p);
+          this._invalid = false;
+          this._setInvalid(false);
+          this._setLatLng({
+            lat: p.latLng.lat,
+            lng: p.latLng.lng
+          });
+          this._value = this.$$('paper-input').inputElement.value;
+          this.value = {
+            search: this.$$('paper-input').inputElement.value,
+            place_id: p.place_id,
+            latLng: {
+              lat: p.latLng.lat,
+              lng: p.latLng.lng
+            }
+          };
+        }
+      },
+
+      /**
+       * extracts and simplifies a google place result
+       * @param  PlaceResult pl google place result
+       * @return place
+       */
+      _extractPlaceInfo: function(pl, searchTerm) {
+
+        var p = {
+          place_id: pl.place_id,
+          formatted_address: pl.formatted_address,
+          search: searchTerm ? searchTerm : pl.formatted_address,
+          latLng: {
+            lat: pl.geometry.location.lat(),
+            lng: pl.geometry.location.lng()
+          },
+          basic: {
+            name: pl.name || "",
+            address: "",
+            city: "",
+            state: "",
+            stateCode: "",
+            postalCode: "",
+            country: "",
+            countryCode: "",
+            phone: pl.formatted_phone_number || ""
+          },
+          placeDetails: {
+            address_components: [],
+            icon: pl.icon,
+            international_phone_number: pl.international_phone_number || "",
+            permanently_closed: pl.permanently_closed || false,
+            types: pl.types ? JSON.parse(JSON.stringify(pl.types)) : [],
+            website: pl.website || "",
+            url: pl.url || "",
+            utc_offset: pl.utc_offset
+          }
+        };
+        // extract address components
+        var address = {
+          street_number: "",
+          route: ""
+        };
+        for (var i = 0; i < pl.address_components.length; i++) {
+          p.placeDetails.address_components.push(JSON.parse(JSON.stringify(pl.address_components[i])));
+          switch (pl.address_components[i].types[0]) {
+            case "locality":
+              p.basic["city"] = pl.address_components[i].long_name;
+              break;
+            case "administrative_area_level_1":
+              p.basic["stateCode"] = pl.address_components[i].short_name;
+              p.basic["state"] = pl.address_components[i].long_name;
+              break;
+            case "country":
+              p.basic["country"] = pl.address_components[i].long_name;
+              p.basic["countryCode"] = pl.address_components[i].short_name;
+              break;
+            case "postal_code":
+              p.basic["postalCode"] = pl.address_components[i].long_name;
+              break;
+            case "street_number":
+              address.street_number = pl.address_components[i].short_name;
+              p.basic.address = address.street_number + " " + address.route;
+              break;
+            case "route":
+              address.route = pl.address_components[i].long_name;
+              p.basic.address = address.street_number + " " + address.route;
+              break;
+            default:
+              address[pl.address_components[i].types[0]] = pl.address_components[i].long_name;
+          }
+        }
+
+        return p;
+
+      },
+      /**
+       * Updates the current place, value and latLng with the place provided
+       * @param  IpipPlace newPlace the new place
+       */
+      putPlace: function(newPlace) {
+        if (newPlace && newPlace.place_id && newPlace.latLng) {
+          this._setPlace(JSON.parse(JSON.stringify(newPlace)));
+          this._setLatLng({
+            lat: newPlace.latLng.lat,
+            lng: newPlace.latLng.lng
+          });
+          this.value = {
+            place_id: newPlace.place_id,
+            search: newPlace.search,
+            latLng: {
+              lat: newPlace.latLng.lat,
+              lng: newPlace.latLng.lng
+            }
+          };
+          this._value = newPlace.search;
+        }
+      }
+
+    });
+  </script>
+</dom-module>

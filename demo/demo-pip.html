@@ -1,0 +1,97 @@
+<link rel="import" href="demo-show-object.html" />
+<link rel="import" href="../paper-input-place.html" />
+<link rel="import" href="../../paper-input/paper-input.html" />
+<link rel="import" href="../../paper-button/paper-button.html" />
+<!--
+`demo-pip`
+Demonstrate paper-input-place
+
+-->
+
+<dom-module id="demo-pip">
+  <template>
+    <style>
+      :host {
+        display: block;
+        width: 100%;
+      }
+    </style>
+
+    <template is="dom-if" if="{{!apiKey}}">
+      <p>
+        The control requires a valid Google API key to provide the Places Autocomplete service. To view the demo, enter your API Key below and click Set Key.
+      </p>
+      <paper-input label="Enter your google api key" value="{{userApiKey}}"></paper-input>
+      <paper-button raised on-tap="setApiKey" disabled$="[[!allowSet]]">Set Key</paper-button>
+    </template>
+
+    <template is="dom-if" if="{{apiKey}}">
+      <paper-input-place value="{{val}}" place="{{place}}" invalid="{{inv}}" api-key="[[apiKey]]" label="Pick a place, any place"></paper-input-place>
+      <br/>
+      <h4>Is Input Invalid?</h4>
+      <span hidden$="[[!inv]]" style="color:red;">True (entry is invalid)</span><span hidden$="[[inv]]" style="color:green;">False (entry is valid)</span>
+      <h4>Value</h4>
+      <demo-show-object show-object="[[val]]"></demo-show-object>
+      <h4>Place</h4>
+      <demo-show-object show-object="[[place]]"></demo-show-object>
+    </template>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'demo-pip',
+
+      properties: {
+        val: {
+          type: Object,
+          notify: true,
+          value: function() {
+            return {
+              search: "",
+              place_id: "",
+              latLng: {
+                lat: 0,
+                lng: 0
+              }
+            }
+          }
+        },
+        place: {
+          type: Object,
+          notify: true
+        },
+        inv: {
+          type: Boolean,
+          notify: true
+        },
+        apiKey: {
+          type: String,
+          notify: true,
+          value: ""
+        },
+        userApiKey: {
+          type: String,
+          notify: true,
+          observer: "_userApiKeyChanged"
+        },
+        allowSet: {
+          type: Boolean,
+          notify: true,
+          value: false
+        }
+      },
+
+      ready: function() {},
+
+      _userApiKeyChanged: function(newVal, oldVal) {
+        this.allowSet = this.userApiKey && this.userApiKey.length > 20 ? true : false;
+      },
+
+      setApiKey: function() {
+        this.apiKey = this.userApiKey;
+      }
+
+    });
+  </script>
+</dom-module>
