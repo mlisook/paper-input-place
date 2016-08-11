@@ -1,0 +1,27 @@
+{
+  "name": "paper-input-place",
+  "description": "Google Places Autocomplete attached to paper-input",
+  "main": "paper-input-place.html",
+  "keywords": [
+    "polymer",
+    "place",
+    "places",
+    "autocomplete",
+    "google-places",
+    "web-components"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "google-apis": "GoogleWebComponents/google-apis#^1.1.6",
+    "paper-input": "PolymerElements/paper-input#^1.1.15"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "highlightjs": "^9.5.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "version": "1.0.0"
+}
