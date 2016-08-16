@@ -40,6 +40,13 @@ Google Places Autocomplete attached to paper-input
           notify: true
         },
         /**
+         * Wether to hide the error message
+         */
+        hideError: {
+          type: Boolean,
+          value: false
+        },
+        /**
          * true if the control is disabled
          */
         disabled: {
@@ -174,7 +181,9 @@ Google Places Autocomplete attached to paper-input
         if (!oldValue || (newValue.search !== oldValue.search || newValue.search !== this._value)) {
           this._value = newValue && newValue.search ? newValue.search : "";
           this._invalid = !newValue || !(newValue.place_id && newValue.latLng && newValue.latLng.lat && newValue.latLng.lng);
-          this._setInvalid(this.required ? this._invalid : this._invalid && (newValue && newValue.search));
+          if (!this.hideError) {
+            this._setInvalid(this.required ? this._invalid : this._invalid && (newValue && newValue.search));
+          }
         }
       },
 
@@ -208,7 +217,9 @@ Google Places Autocomplete attached to paper-input
           };
           this._setPlace({});
           this._invalid = true;
-          this._setInvalid(false);
+          if (!this.hideError) {
+            this._setInvalid(false);
+          }
           return;
         }
         // if the existing value is blank, and the new value is not
@@ -223,7 +234,9 @@ Google Places Autocomplete attached to paper-input
           };
           this._setPlace({});
           this._invalid = true;
-          this._setInvalid(true);
+          if (!this.hideError) {
+            this._setInvalid(true);
+          }
           return;
         }
         // otherwise, the value is invalid
@@ -237,7 +250,9 @@ Google Places Autocomplete attached to paper-input
         };
         this._setPlace({});
         this._invalid = true;
-        this._setInvalid(true);
+        if (!this.hideError) {
+          this._setInvalid(true);
+        }
         return;
 
       },
