@@ -161,6 +161,8 @@ The floating label for the paper-input.
 ```
 ### required
 Indicates to the control that selection of a place is mandatory and that an empty input is not valid.
+### hide-error
+If specified the element doesn't display an error message and doesn't turn red
 ## Methods - Convenience Functions
 ### geocode(address)
 The `geocode` function takes an address as it's parameter and returns a _promise_ for a result which is a _place object_ as described in the place property above.  Note that this does not have any effect on the control's properties (but, of course one could turn around and set the value property with information from the place detail returned).
