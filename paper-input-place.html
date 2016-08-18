@@ -9,6 +9,8 @@
 Google Places Autocomplete attached to paper-input
 
 @demo demo/index.html
+
+@version 1.0.3
 -->
 
 <dom-module id="paper-input-place">
@@ -222,6 +224,13 @@ Google Places Autocomplete attached to paper-input
           }
           return;
         }
+        // if the new _value matches the value.search, which could happen if
+        // the value is changed externally (possibly through data binding) which
+        // causes _value to be changed triggering this function _svalChanged()
+        if (newValue && this.value && this.value.search && newValue == this.value.search) {
+          // nothing has really changed, just return
+          return;
+        }
         // if the existing value is blank, and the new value is not
         if ((!this.value || !this.value.search) && newValue) {
           this.value = {
@@ -257,6 +266,7 @@ Google Places Autocomplete attached to paper-input
 
       },
 
+
       _clearLocation: function(e) {
         this._value = "";
       },
@@ -288,7 +298,7 @@ Google Places Autocomplete attached to paper-input
        */
       reverseGeocode: function(latlng, options) {
         return new Promise(function(resolve, reject) {
-          var opts = options? options: {};
+          var opts = options ? options : {};
           if (latlng) {
             opts.location = latlng;
           }

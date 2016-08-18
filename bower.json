@@ -23,5 +23,5 @@
     "highlightjs": "^9.5.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
-  "version": "1.0.2"
+  "version": "1.0.3"
 }
