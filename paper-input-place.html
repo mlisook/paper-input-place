@@ -22,7 +22,7 @@ Google Places Autocomplete attached to paper-input
     </style>
     <template is="dom-if" if="[[apiKey]]" restamp="true">
       <google-maps-api api-key="[[apiKey]]" on-api-load="_mapsApiLoaded"></google-maps-api>
-      <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="Invalid - please select a place">
+      <paper-input id="locationsearch" label="[[label]]" value="[[searchValue]]" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="Invalid - please select a place">
         <iron-icon icon="clear" suffix on-tap="_clearLocation"></iron-icon>
       </paper-input>
     </template>
@@ -42,7 +42,7 @@ Google Places Autocomplete attached to paper-input
           notify: true
         },
         /**
-         * Wether to hide the error message
+         * Hide error messages
          */
         hideError: {
           type: Boolean,
@@ -154,11 +154,13 @@ Google Places Autocomplete attached to paper-input
           notify: true,
           observer: '_valueChanged'
         },
-        /** @private */
-        _value: {
+        /**
+         * Use this to set a default value
+         */
+        searchValue: {
           type: String,
           notify: true,
-          value: "",
+          value: '',
           observer: '_svalChanged'
         }
 
@@ -181,7 +183,7 @@ Google Places Autocomplete attached to paper-input
         // update the search term and the invalid flag if the value is being set for the first time,
         // or if the value has changed and is not the same as the search term
         if (!oldValue || (newValue.search !== oldValue.search || newValue.search !== this._value)) {
-          this._value = newValue && newValue.search ? newValue.search : "";
+          this.searchValue = newValue && newValue.search ? newValue.search : this.searchValue;
           this._invalid = !newValue || !(newValue.place_id && newValue.latLng && newValue.latLng.lat && newValue.latLng.lng);
           if (!this.hideError) {
             this._setInvalid(this.required ? this._invalid : this._invalid && (newValue && newValue.search));
@@ -268,7 +270,7 @@ Google Places Autocomplete attached to paper-input
 
 
       _clearLocation: function(e) {
-        this._value = "";
+        this.searchValue = "";
       },
       /**
        * Geocodes an address
@@ -324,7 +326,7 @@ Google Places Autocomplete attached to paper-input
             lat: p.latLng.lat,
             lng: p.latLng.lng
           });
-          this._value = this.$$('paper-input').inputElement.value;
+          this.searchValue = this.$$('paper-input').inputElement.value;
           this.value = {
             search: this.$$('paper-input').inputElement.value,
             place_id: p.place_id,
@@ -430,7 +432,7 @@ Google Places Autocomplete attached to paper-input
               lng: newPlace.latLng.lng
             }
           };
-          this._value = newPlace.search;
+          this.searchValue = newPlace.search;
         }
       }
 
