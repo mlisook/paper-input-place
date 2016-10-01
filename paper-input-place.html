@@ -10,7 +10,7 @@ Google Places Autocomplete attached to paper-input
 
 @demo demo/index.html
 
-@version 1.0.3
+@version 1.1.0
 -->
 
 <dom-module id="paper-input-place">
@@ -22,10 +22,10 @@ Google Places Autocomplete attached to paper-input
     </style>
     <template is="dom-if" if="[[apiKey]]" restamp="true">
       <google-maps-api api-key="[[apiKey]]" on-api-load="_mapsApiLoaded"></google-maps-api>
-      <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="Invalid - please select a place">
-        <iron-icon icon="clear" suffix on-tap="_clearLocation"></iron-icon>
-      </paper-input>
     </template>
+  <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="Invalid - please select a place">
+    <iron-icon icon="clear" suffix on-tap="_clearLocation"></iron-icon>
+  </paper-input>
   </template>
 
   <script>
@@ -42,7 +42,18 @@ Google Places Autocomplete attached to paper-input
           notify: true
         },
         /**
-         * Wether to hide the error message
+         * Indicates the Google API is loaded and that Autocomplete suggestions and geocoding functions are available
+         */
+        apiLoaded: {
+          type: Boolean,
+          notify: true,
+          value: false,
+          readOnly: true
+        },
+        /**
+         * Whether to hide the error message
+         * If true, the control does not validate that the value is complete (lat/lng, search term, place_id)
+         * and has been chosen from the places drop down.
          */
         hideError: {
           type: Boolean,
@@ -172,9 +183,15 @@ Google Places Autocomplete attached to paper-input
       },
 
       _mapsApiLoaded: function() {
-        this._geocoder = new google.maps.Geocoder();
-        this._places = new google.maps.places.Autocomplete(this.$$('#locationsearch').inputElement, {});
-        google.maps.event.addListener(this._places, 'place_changed', this._onChangePlace.bind(this));
+        if (!this._geocoder && !this._places && this.$.locationsearch && this.$.locationsearch.inputElement) {
+          this._geocoder = new google.maps.Geocoder();
+          this._places = new google.maps.places.Autocomplete(this.$$('#locationsearch').inputElement, {});
+          google.maps.event.addListener(this._places, 'place_changed', this._onChangePlace.bind(this));
+          this._setApiLoaded(true);
+          this.fire('api-loaded', {
+            text: 'Google api is ready'
+          });
+        }
       },
 
       _valueChanged: function(newValue, oldValue) {
@@ -278,16 +295,20 @@ Google Places Autocomplete attached to paper-input
        */
       geocode: function(address, options) {
         return new Promise(function(resolve, reject) {
-          var opts = options ? options : {};
-          opts.address = address ? address : "";
-          this._geocoder.geocode(opts, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK && results && results[0]) {
-              var p = this._extractPlaceInfo(results[0], opts.address);
-              resolve(p);
-            } else {
-              reject(status);
-            }
-          }.bind(this));
+          if (!this._geocoder) {
+            reject('Geocoder not ready.');
+          } else {
+            var opts = options ? options : {};
+            opts.address = address ? address : "";
+            this._geocoder.geocode(opts, function(results, status) {
+              if (status == google.maps.GeocoderStatus.OK && results && results[0]) {
+                var p = this._extractPlaceInfo(results[0], opts.address);
+                resolve(p);
+              } else {
+                reject(status);
+              }
+            }.bind(this));
+          }
         }.bind(this));
       },
       /**
@@ -298,18 +319,22 @@ Google Places Autocomplete attached to paper-input
        */
       reverseGeocode: function(latlng, options) {
         return new Promise(function(resolve, reject) {
-          var opts = options ? options : {};
-          if (latlng) {
-            opts.location = latlng;
-          }
-          this._geocoder.geocode(opts, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK && results && results[0]) {
-              var p = this._extractPlaceInfo(results[0], "");
-              resolve(p);
-            } else {
-              reject(status);
+          if (!this._geocoder) {
+            reject('Geocoder not ready.');
+          } else {
+            var opts = options ? options : {};
+            if (latlng) {
+              opts.location = latlng;
             }
-          }.bind(this));
+            this._geocoder.geocode(opts, function(results, status) {
+              if (status == google.maps.GeocoderStatus.OK && results && results[0]) {
+                var p = this._extractPlaceInfo(results[0], "");
+                resolve(p);
+              } else {
+                reject(status);
+              }
+            }.bind(this));
+          }
         }.bind(this));
       },
 
@@ -435,5 +460,13 @@ Google Places Autocomplete attached to paper-input
       }
 
     });
+    /**
+    Fired when the google maps api has loaded.
+
+    The api is now available to provide
+    geocoding and place suggestions.
+
+    @event api-loaded
+    */
   </script>
 </dom-module>
