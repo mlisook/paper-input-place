@@ -7,7 +7,7 @@ Google Places Autocomplete attached to a paper-input, providing a convenient mat
 Basic use:
 
 ```html
-<paper-input-place api-key="your google api key" value="{{tourstop.place}}"></paper-input-place>
+<paper-input-place api-key="your google api key" value="{{tourstop.place}}" hide-error></paper-input-place>
 ```
 The `value` property is an object:
 
@@ -21,7 +21,28 @@ The `value` property is an object:
   }
 }
 ```
+Basic use with validation:
+
+```html
+<paper-input-place api-key="your google api key" value="{{tourstop.place}}"></paper-input-place>
+```
+## Installation
+
+Use bower to install:
+`bower install --save paper-input-place`
+
 ## Additional Properties
+### apiLoaded
+A _read only_ boolean property (notifies) that indicates if the google api is
+loaded and ready to provide place suggestions and geocoding services.
+
+The control also fires an event, `api-loaded`, when the google api is ready
+and attached to the input control.
+
+### hideError
+If specified the element doesn't display an error message and doesn't turn red.
+Set `hide-error` in the markup to suppress validation.
+
 ### invalid
 `invalid` is a _read only_ property which indicates if the control has a valid place.
 ```html
@@ -161,8 +182,7 @@ The floating label for the paper-input.
 ```
 ### required
 Indicates to the control that selection of a place is mandatory and that an empty input is not valid.
-### hide-error
-If specified the element doesn't display an error message and doesn't turn red
+
 ## Methods - Convenience Functions
 ### geocode(address)
 The `geocode` function takes an address as it's parameter and returns a _promise_ for a result which is a _place object_ as described in the place property above.  Note that this does not have any effect on the control's properties (but, of course one could turn around and set the value property with information from the place detail returned).
@@ -182,6 +202,19 @@ The `reverseGeocode` function takes a latLng object as it's parameter and return
 this.$$('paper-input-place').reverseGeocode(latlng).then(
   function(result) {
     // do something with result (a place object)
+  }.bind(this),
+  function(status) {
+    // do something with status - the reason the geocode did not work
+  }.bind(this)
+);
+```
+### putPlace(place)
+The `putPlace` function takes a place object and updates the control to reflect that place.
+```js
+this.$$('paper-input-place').geocode('Qualcomm Stadium').then(
+  function(result) {
+    // set the control to this place
+    this.$$('paper-input-place').putPlace(result);
   }.bind(this),
   function(status) {
     // do something with status - the reason the geocode did not work
