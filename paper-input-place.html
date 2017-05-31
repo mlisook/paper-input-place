@@ -406,7 +406,7 @@ Basic use with validation:
       _onChangePlace: function(e) {
         var pl = this._places.getPlace();
         if (pl.geometry) {
-          var p = this._extractPlaceInfo(pl, this.$$('paper-input').inputElement.value);
+          var p = this._extractPlaceInfo(pl, this.$.locationsearch.$.nativeInput.value);
           this._setPlace(p);
           this._invalid = false;
           this._setInvalid(false);
@@ -414,9 +414,9 @@ Basic use with validation:
             lat: p.latLng.lat,
             lng: p.latLng.lng
           });
-          this._value = this.$$('paper-input').inputElement.value;
+          this._value = this.$.locationsearch.$.nativeInput.value;
           this.value = {
-            search: this.$$('paper-input').inputElement.value,
+            search: this.$.locationsearch.$.nativeInput.value,
             place_id: p.place_id,
             latLng: {
               lat: p.latLng.lat,
