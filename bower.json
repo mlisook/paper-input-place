@@ -17,6 +17,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#1.9 - 2",
     "paper-input": "PolymerElements/paper-input#^2.0.0",
+    "iron-input": "PolymerElements/iron-input#^2.0.0",
     "iron-jsonp-library": "PolymerElements/iron-jsonp-library#^2.0.0",
     "iron-icon": "PolymerElements/iron-icon#^2.0.0",
     "iron-iconset-svg": "PolymerElements/iron-iconset-svg#^2.0.0"
@@ -28,5 +29,5 @@
     "highlightjs": "^9.5.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
   },
-  "version": "1.9.0"
+  "version": "1.9.1"
 }
