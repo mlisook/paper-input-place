@@ -2,12 +2,15 @@
 
 Google Places Autocomplete attached to a paper-input, providing a convenient material design input for places.
 
-[Live Demo](https://mlisook.github.io/paper-input-place/)
+This release is a Polymer 2.0 hybrid element so it will work in 1.x or 2.0 Polymer applications.
+
+[Live Demos](https://mlisook.github.io/paper-input-place/)
 
 Basic use:
 
 ```html
-<paper-input-place api-key="your google api key" value="{{tourstop.place}}" hide-error></paper-input-place>
+<paper-input-place api-key="your google api key" value="{{tourstop.place}}" 
+  label="Pick a place" hide-error></paper-input-place>
 ```
 The `value` property is an object:
 
@@ -24,7 +27,7 @@ The `value` property is an object:
 Basic use with validation:
 
 ```html
-<paper-input-place api-key="your google api key" value="{{tourstop.place}}"></paper-input-place>
+<paper-input-place label="Pick a place" api-key="your google api key" value="{{tourstop.place}}"></paper-input-place>
 ```
 ## Installation
 
@@ -184,8 +187,12 @@ The floating label for the paper-input.
 Indicates to the control that selection of a place is mandatory and that an empty input is not valid.
 
 ## Methods - Convenience Functions
+While not needed for the main purpose, the user entering a place, you may have existing data you
+need to geocode for use in the element.  We make these functions available here since the Google
+API is already loaded.
+
 ### geocode(address)
-The `geocode` function takes an address as it's parameter and returns a _promise_ for a result which is a _place object_ as described in the place property above.  Note that this does not have any effect on the control's properties (but, of course one could turn around and set the value property with information from the place detail returned).
+The `geocode` function takes an address as its parameter and returns a _promise_ for a result which is a _place object_ as described in the place property above.  Note that this does not have any effect on the control's properties (but, of course one could turn around and set the value property with information from the place detail returned).
 ```js
 this.$$('paper-input-place').geocode(address).then(
   function(result) {

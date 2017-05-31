@@ -2,6 +2,7 @@
   "name": "paper-input-place",
   "description": "Google Places Autocomplete attached to paper-input",
   "main": "paper-input-place.html",
+  "demo": "demo/index.html",
   "keywords": [
     "polymer",
     "place",
@@ -14,16 +15,18 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.9.1",
-    "google-apis": "GoogleWebComponents/google-apis#^1.1.6",
-    "paper-input": "PolymerElements/paper-input#^2.0.0"
+    "polymer": "Polymer/polymer#1.9 - 2",
+    "paper-input": "PolymerElements/paper-input#^2.0.0",
+    "iron-jsonp-library": "PolymerElements/iron-jsonp-library#^2.0.0",
+    "iron-icon": "PolymerElements/iron-icon#^2.0.0",
+    "iron-iconset-svg": "PolymerElements/iron-iconset-svg#^2.0.0"
   },
   "devDependencies": {
-    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
-    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
-    "web-component-tester": "^4.0.0",
+    "iron-component-page": "PolymerElements/iron-component-page#^2.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
+    "web-component-tester": "^6.0.0",
     "highlightjs": "^9.5.0",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
   },
-  "version": "1.2.0"
+  "version": "1.9.0"
 }

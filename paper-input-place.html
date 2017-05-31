@@ -1,16 +1,45 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-input/paper-input.html" />
-<link rel="import" href="../google-apis/google-maps-api.html" />
+<link rel="import" href="../iron-jsonp-library/iron-jsonp-library.html">
 <link rel="import" href="../iron-icon/iron-icon.html" />
 <link rel="import" href="paper-input-place-icons.html" />
 
 <!--
 `paper-input-place`
-Google Places Autocomplete attached to paper-input
+
+Google Places Autocomplete attached to paper-input.
+
+This release is a Polymer 2.0 hybrid element so it will work in 1.x or 2.0 Polymer applications.
+
+  Basic use:
+
+```html
+<paper-input-place api-key="your google api key" value="{{tourstop.place}}" 
+  label="Pick a place" hide-error></paper-input-place>
+```
+The `value` property is an object:
+
+```js
+{
+  "search": "Guggenheim Museum, 5th Avenue, New York, NY, United States",
+  "place_id": "ChIJmZ5emqJYwokRuDz79o0coAQ",
+  "latLng": {
+    "lat": 40.7829796,
+    "lng": -73.95897059999999
+  }
+}
+```
+Basic use with validation:
+
+```html
+<paper-input-place label="Pick a place" api-key="your google api key" value="{{tourstop.place}}"></paper-input-place>
+```
+
+
 
 @demo demo/index.html
 
-@version 1.1.0
+@version 1.9.0
 -->
 
 <dom-module id="paper-input-place">
@@ -21,7 +50,22 @@ Google Places Autocomplete attached to paper-input
       }
     </style>
     <template is="dom-if" if="[[apiKey]]" restamp="true">
-      <google-maps-api api-key="[[apiKey]]" on-api-load="_mapsApiLoaded"></google-maps-api>
+      <!-- 
+        NOTE: the GoogleWebComponents collection has not been updated
+        to support Polymer 2.0 as of 5/31/2017.  There is no estimated
+        date at this time.
+
+        For that reason this control is using iron-jsonp-library to load
+        the google maps api instead of <google-maps-api>.  The url string 
+        is the same as what would have been issued by the <google-maps-api> so
+        even if that control is used elsewhere in your 1.x app, the api will
+        not be loaded twice.
+        -->
+      <iron-jsonp-library
+        library-url="[[_gmapApiUrl]]"
+        notify-event="map-api-load"
+        library-loaded="{{_ijplLoaded}}" 
+        on-map-api-load="_mapsApiLoaded"></iron-jsonp-library>
     </template>
   <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="Invalid - please select a place">
     <iron-icon icon="papinpplc:clear" suffix on-tap="_clearLocation"></iron-icon>
@@ -171,6 +215,22 @@ Google Places Autocomplete attached to paper-input
           notify: true,
           value: "",
           observer: '_svalChanged'
+        },
+        /** 
+         * @private
+         * The url for the google maps api
+         */
+        _gmapApiUrl: {
+          type: String,
+          notify: true,
+          computed: '_computeUrl(apiKey)'
+        },
+        /** 
+         * @private
+         * jsonp loaded bool
+         */
+        _ijplLoaded: {
+          type: Boolean
         }
 
       },
@@ -180,6 +240,11 @@ Google Places Autocomplete attached to paper-input
         if (apiElement && apiElement.libraryLoaded) {
           this._mapsApiLoaded();
         }
+      },
+
+      _computeUrl: function(akey) {
+        return "https://maps.googleapis.com/maps/api/js?callback=%%callback%%&v=3.exp&libraries=drawing,geometry,places,visualization&key="
+            + akey; 
       },
 
       _mapsApiLoaded: function() {
