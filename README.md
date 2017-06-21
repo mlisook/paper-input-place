@@ -4,9 +4,16 @@ Google Places Autocomplete attached to a paper-input, providing a convenient mat
 
 This release is a Polymer 2.0 hybrid element so it will work in 1.x or 2.0 Polymer applications.
 
-[Live Demos](https://mlisook.github.io/paper-input-place/)
+Try it on the [Live Demos](https://mlisook.github.io/paper-input-place/) page.
 
-Basic use:
+## Contents
+* [Basic Use](#basic-use)
+* [Installation](#installation)
+* [Properties](#additional-properties)
+* [Methods](#methods)
+* [Styling](#styling)
+
+## Basic use
 
 ```html
 <paper-input-place api-key="your google api key" value="{{tourstop.place}}" 
@@ -41,6 +48,15 @@ loaded and ready to provide place suggestions and geocoding services.
 
 The control also fires an event, `api-loaded`, when the google api is ready
 and attached to the input control.
+
+### errorMessage
+`errorMessage` / `error-message` allows customization of the error message display.
+```html
+<paper-input-place api-key="your google api key" error-message="Pick a place from the list"
+  value="{{myPlace}}" required label="Select your destination"
+  invalid="{{noPlace}}"></paper-input-place>
+<paper-button disabled$="[[noPlace]]" on-tap="saveIt">Save</paper-button>
+```
 
 ### hideError
 If specified the element doesn't display an error message and doesn't turn red.
@@ -186,8 +202,8 @@ The floating label for the paper-input.
 ### required
 Indicates to the control that selection of a place is mandatory and that an empty input is not valid.
 
-## Methods - Convenience Functions
-While not needed for the main purpose, the user entering a place, you may have existing data you
+## Methods
+Convenience functions.  While not needed for the main purpose, the user entering a place, you may have existing data you
 need to geocode for use in the element.  We make these functions available here since the Google
 API is already loaded.
 
@@ -227,4 +243,44 @@ this.$$('paper-input-place').geocode('Qualcomm Stadium').then(
     // do something with status - the reason the geocode did not work
   }.bind(this)
 );
+```
+
+## Styling
+Style the `paper-input-place` element as you would a `paper-input` - use the mixins and variables
+of `paper-input-container` documented on the [paper-input-container api page](https://www.webcomponents.org/element/PolymerElements/paper-input/elements/paper-input-container). Apply the style to the `paper-input-place` element.
+
+Example: make the `paper-input-place` more green:
+
+```html
+<template>
+  <style>
+    paper-input-place {
+      width: 450px;
+    }
+    paper-input-place.make-it-green {        
+      --paper-input-container-underline: {
+        border-bottom: 2px dotted lightgreen;
+      }
+      --paper-input-container-underline-focus: {
+        border-bottom: 4px solid green;
+      }
+      --paper-input-container-label-focus: {
+        font-style: italic;
+        color: green;
+        font-weight: bold;
+      }
+      --paper-input-container-label: {
+        font-style: italic;
+        color: lightgreen;
+        font-weight: normal;
+      }
+        --paper-input-container-label-floating: {
+        font-style: italic;
+        color: darkgreen;
+        font-weight: bold;
+      }
+    }
+  </style>
+  <paper-input-place class="make-it-green" value="{{val}}" place="{{place}}" invalid="{{inv}}" api-key="[[apiKey]]" label="Pick a place, any place" hide-error></paper-input-place>
+</template>
 ```

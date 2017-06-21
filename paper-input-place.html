@@ -35,11 +35,12 @@ Basic use with validation:
 <paper-input-place label="Pick a place" api-key="your google api key" value="{{tourstop.place}}"></paper-input-place>
 ```
 
+See README.MD for more use examples, styling, api and a link to a live demo page.
 
 
 @demo demo/index.html
 
-@version 1.9.0
+@version 1.9.2
 -->
 
 <dom-module id="paper-input-place">
@@ -67,7 +68,7 @@ Basic use with validation:
         library-loaded="{{_ijplLoaded}}" 
         on-map-api-load="_mapsApiLoaded"></iron-jsonp-library>
     </template>
-  <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="Invalid - please select a place">
+  <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="[[errorMessage]]">
     <iron-icon icon="papinpplc:clear" suffix on-tap="_clearLocation"></iron-icon>
   </paper-input>
   </template>
@@ -114,6 +115,15 @@ Basic use with validation:
         /** @private */
         _geocoder: {
           type: Object
+        },
+        /**
+         * error message to display if place is invalid (and hideError is false).
+         * Default value is "Invalid - please select a place".
+         */
+        errorMessage: {
+          type: String,
+          value: "Invalid - please select a place",
+          notify: true
         },
         /**
          * True if the entered text is not valid - i.e. not a selected place and not previously geocoded
