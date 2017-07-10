@@ -62,6 +62,11 @@ and attached to the input control.
 If specified the element doesn't display an error message and doesn't turn red.
 Set `hide-error` in the markup to suppress validation.
 
+### hideIcon
+
+If true (`hide-icon` attribute present) the element will not display the "place" icon
+in the prefix position of the `paper-input`.
+
 ### invalid
 `invalid` is a _read only_ property which indicates if the control has a valid place.
 ```html
