@@ -49,6 +49,11 @@ See README.MD for more use examples, styling, api and a link to a live demo page
       :host {
         display: inline-block;
       }
+
+      iron-icon[hidden] {
+        display: none !important;
+      }
+
     </style>
     <template is="dom-if" if="[[apiKey]]" restamp="true">
       <!-- 
@@ -69,7 +74,8 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         on-map-api-load="_mapsApiLoaded"></iron-jsonp-library>
     </template>
   <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="[[errorMessage]]">
-    <iron-icon icon="papinpplc:clear" suffix on-tap="_clearLocation"></iron-icon>
+    <iron-icon hidden$="[[hideIcon]]" icon="papinpplc:place" slot="prefix"></iron-icon>
+    <iron-icon icon="papinpplc:clear" slot="suffix" on-tap="_clearLocation"></iron-icon>
   </paper-input>
   </template>
 
@@ -103,6 +109,14 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         hideError: {
           type: Boolean,
           value: false
+        },
+        /**
+         * Whether to hide the place icon
+         * If true, the control does not show the place icon in the input box.
+         */
+        hideIcon: {
+            type: Boolean,
+            value: false
         },
         /**
          * true if the control is disabled
