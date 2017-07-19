@@ -15,6 +15,20 @@ Demonstrate paper-input-place
         display: block;
         width: 100%;
       }
+
+      paper-input-place {
+        --paper-input-place-icon-mixin: {
+          color: green;
+        };
+
+        --paper-input-place-prefix-icon-mixin: {
+          margin-right: 1em;
+        };
+
+        --paper-input-place-postfix-icon-mixin: {
+          margin-left: 1em;
+        };
+      }
     </style>
 
     <template is="dom-if" if="{{!apiKey}}">

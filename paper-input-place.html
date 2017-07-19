@@ -35,6 +35,16 @@ Basic use with validation:
 <paper-input-place label="Pick a place" api-key="your google api key" value="{{tourstop.place}}"></paper-input-place>
 ```
 
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-input-place-icon-mixin`          | Mixin applied to all icons        | `{}`
+`--paper-input-place-prefix-icon-mixin`   | Mixin applied to the prefix icon  | `{}`
+`--paper-input-place-postfix-icon-mixin`  | Mixin applied to the postfix icon | `{}`
+
 See README.MD for more use examples, styling, api and a link to a live demo page.
 
 
@@ -48,6 +58,18 @@ See README.MD for more use examples, styling, api and a link to a live demo page
     <style>
       :host {
         display: inline-block;
+      }
+
+      iron-icon {
+        @apply --paper-input-place-icon-mixin;
+      }
+
+      #prefixicon {
+        @apply --paper-input-place-prefix-icon-mixin;
+      }
+
+      #postfixicon {
+        @apply --paper-input-place-postfix-icon-mixin;
       }
 
       iron-icon[hidden] {
@@ -74,8 +96,8 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         on-map-api-load="_mapsApiLoaded"></iron-jsonp-library>
     </template>
   <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="[[errorMessage]]">
-    <iron-icon hidden$="[[hideIcon]]" icon="papinpplc:place" slot="prefix"></iron-icon>
-    <iron-icon icon="papinpplc:clear" slot="suffix" on-tap="_clearLocation"></iron-icon>
+    <iron-icon id="prefixicon" hidden$="[[hideIcon]]" icon="papinpplc:place" slot="prefix"></iron-icon>
+    <iron-icon id="postfixicon" icon="papinpplc:clear" slot="suffix" on-tap="_clearLocation"></iron-icon>
   </paper-input>
   </template>
 
