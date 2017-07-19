@@ -36,6 +36,17 @@ Basic use with validation:
 ```html
 <paper-input-place label="Pick a place" api-key="your google api key" value="{{tourstop.place}}"></paper-input-place>
 ```
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-input-place-icon-mixin`          | Mixin applied to all icons        | `{}`
+`--paper-input-place-prefix-icon-mixin`   | Mixin applied to the prefix icon  | `{}`
+`--paper-input-place-postfix-icon-mixin`  | Mixin applied to the postfix icon | `{}`
+
 ## Installation
 
 Use bower to install:
