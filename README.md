@@ -37,16 +37,6 @@ Basic use with validation:
 <paper-input-place label="Pick a place" api-key="your google api key" value="{{tourstop.place}}"></paper-input-place>
 ```
 
-### Styling
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-input-place-icon-mixin`          | Mixin applied to all icons        | `{}`
-`--paper-input-place-prefix-icon-mixin`   | Mixin applied to the prefix icon  | `{}`
-`--paper-input-place-postfix-icon-mixin`  | Mixin applied to the postfix icon | `{}`
-
 ## Installation
 
 Use bower to install:
@@ -262,7 +252,18 @@ this.$$('paper-input-place').geocode('Qualcomm Stadium').then(
 ```
 
 ## Styling
-Style the `paper-input-place` element as you would a `paper-input` - use the mixins and variables
+### Custom Properties
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-input-place-icon-mixin`          | Mixin applied to all icons        | `{}`
+`--paper-input-place-prefix-icon-mixin`   | Mixin applied to the prefix icon  | `{}`
+`--paper-input-place-postfix-icon-mixin`  | Mixin applied to the postfix icon | `{}`
+
+### Paper Input Mixins and Variables
+You can style the `paper-input-place` element as you would any `paper-input` element - use the mixins and variables
 of `paper-input-container` documented on the [paper-input-container api page](https://www.webcomponents.org/element/PolymerElements/paper-input/elements/paper-input-container). Apply the style to the `paper-input-place` element.
 
 Example: make the `paper-input-place` more green:
@@ -295,6 +296,11 @@ Example: make the `paper-input-place` more green:
         color: darkgreen;
         font-weight: bold;
       }
+      /* and a custom property also */
+        paper-input-place {
+          --paper-input-place-icon-mixin: {
+            color: green;
+      };
     }
   </style>
   <paper-input-place class="make-it-green" value="{{val}}" place="{{place}}" invalid="{{inv}}" api-key="[[apiKey]]" label="Pick a place, any place" hide-error></paper-input-place>
