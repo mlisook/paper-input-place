@@ -56,7 +56,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
 <dom-module id="paper-input-place">
   <template>
     <style>
-      :host {
+       :host {
         display: inline-block;
       }
 
@@ -75,7 +75,6 @@ See README.MD for more use examples, styling, api and a link to a live demo page
       iron-icon[hidden] {
         display: none !important;
       }
-
     </style>
     <template is="dom-if" if="[[apiKey]]" restamp="true">
       <!-- 
@@ -89,16 +88,12 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         even if that control is used elsewhere in your 1.x app, the api will
         not be loaded twice.
         -->
-      <iron-jsonp-library
-        library-url="[[_gmapApiUrl]]"
-        notify-event="map-api-load"
-        library-loaded="{{_ijplLoaded}}" 
-        on-map-api-load="_mapsApiLoaded"></iron-jsonp-library>
+      <iron-jsonp-library library-url="[[_gmapApiUrl]]" notify-event="map-api-load" library-loaded="{{_ijplLoaded}}" on-map-api-load="_mapsApiLoaded"></iron-jsonp-library>
     </template>
-  <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="[[errorMessage]]">
-    <iron-icon id="prefixicon" hidden$="[[hideIcon]]" icon="papinpplc:place" slot="prefix"></iron-icon>
-    <iron-icon id="postfixicon" icon="papinpplc:clear" slot="suffix" on-tap="_clearLocation"></iron-icon>
-  </paper-input>
+    <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="[[errorMessage]]">
+      <iron-icon id="prefixicon" hidden$="[[hideIcon]]" icon="papinpplc:place" slot="prefix"></iron-icon>
+      <iron-icon id="postfixicon" icon="papinpplc:clear" slot="suffix" on-tap="_clearLocation"></iron-icon>
+    </paper-input>
   </template>
 
   <script>
@@ -137,8 +132,8 @@ See README.MD for more use examples, styling, api and a link to a live demo page
          * If true, the control does not show the place icon in the input box.
          */
         hideIcon: {
-            type: Boolean,
-            value: false
+          type: Boolean,
+          value: false
         },
         /**
          * true if the control is disabled
@@ -151,6 +146,46 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         /** @private */
         _geocoder: {
           type: Object
+        },
+
+        /*
+         * region bias options
+         */
+
+        /**
+         * bias search results to a country code  (ISO 3166-1 Alpha-2 country code, case insensitive).
+         */
+        searchCountryCode: {
+          type: String,
+          value: ""
+        },
+        /**
+         * bias search results to a bounding rectangle.
+         * object properties (all are required):
+         * {
+         *    east: number,  // East longitude in degrees.
+         *    west: number,  // West longitude in degrees.
+         *    north: number, // North latitude in degrees.
+         *    south: number, // South latitude in degrees.  
+         * }
+         * 
+         */
+        searchBounds: {
+          type: Object
+        },
+        
+        /**
+         * bias search results by type
+         * permitted values: 
+         *   address
+         *   geocode
+         *   establishment
+         *   (regions) 
+         *   (cities)
+         */
+        searchType: {
+          type: String,
+          value: ""
         },
         /**
          * error message to display if place is invalid (and hideError is false).
@@ -194,7 +229,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
           type: Object,
           notify: true,
           readOnly: true,
-          value: function() {
+          value: function () {
             return {
               lat: 0,
               lng: 0
@@ -225,7 +260,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
           type: Object,
           notify: true,
           readOnly: true,
-          value: function() {
+          value: function () {
             return {};
           }
         },
@@ -281,43 +316,80 @@ See README.MD for more use examples, styling, api and a link to a live demo page
 
       },
 
-      ready: function() {
+      observers: [
+        '_searchBiasChanged(searchCountryCode,searchBounds,searchBoundsStrict,searchType)'
+      ],
+
+      ready: function () {
         var apiElement = this.$$('google-maps-api');
         if (apiElement && apiElement.libraryLoaded) {
           this._mapsApiLoaded();
         }
       },
 
-      _computeUrl: function(akey) {
-        return "https://maps.googleapis.com/maps/api/js?callback=%%callback%%&v=3.exp&libraries=drawing,geometry,places,visualization&key="
-            + akey; 
+      _computeUrl: function (akey) {
+        return "https://maps.googleapis.com/maps/api/js?callback=%%callback%%&v=3.exp&libraries=drawing,geometry,places,visualization&key=" +
+          akey;
       },
 
-      _mapsApiLoaded: function() {
+      _mapsApiLoaded: function () {
         if (!this._geocoder && !this._places && this.$.locationsearch && this.$.locationsearch.$.nativeInput) {
           this._geocoder = new google.maps.Geocoder();
           this._places = new google.maps.places.Autocomplete(this.$$('#locationsearch').$$('#nativeInput'), {});
           google.maps.event.addListener(this._places, 'place_changed', this._onChangePlace.bind(this));
           this._setApiLoaded(true);
+          this._searchBiasChanged();
           this.fire('api-loaded', {
             text: 'Google api is ready'
           });
         }
       },
 
-      _valueChanged: function(newValue, oldValue) {
+      /**
+       * observer for changes to search bias
+       */
+      _searchBiasChanged: function (searchCountryCode, searchBounds, searchBoundsStrict, searchType) {
+        if (this.apiLoaded) {
+
+          if (this.searchBounds &&
+            this.searchBounds.hasOwnProperty('east') &&
+            this.searchBounds.hasOwnProperty('west') &&
+            this.searchBounds.hasOwnProperty('north') &&
+            this.searchBounds.hasOwnProperty('south')
+          ) {
+            this._places.setBounds(this.searchBounds);
+          } else {
+            this._places.setBounds();
+          }
+          if (this.searchCountryCode && this.searchCountryCode.length == 2) {
+            this._places.setComponentRestrictions({
+              country: this.searchCountryCode.toString()
+            });
+          } else {
+            this._places.setComponentRestrictions();
+          }
+          if (this.searchType && ['address', 'geocode', 'establishment', '(regions)', '(cities)'].includes(this.searchType)) {
+            this._places.setTypes([this.searchType.toString()]);
+          } else {
+            this._places.setTypes([]);
+          }
+        }
+      },
+
+      _valueChanged: function (newValue, oldValue) {
         // update the search term and the invalid flag if the value is being set for the first time,
         // or if the value has changed and is not the same as the search term
         if (!oldValue || (newValue.search !== oldValue.search || newValue.search !== this._value)) {
           this._value = newValue && newValue.search ? newValue.search : "";
-          this._invalid = !newValue || !(newValue.place_id && newValue.latLng && newValue.latLng.lat && newValue.latLng.lng);
+          this._invalid = !newValue || !(newValue.place_id && newValue.latLng && newValue.latLng.lat && newValue.latLng
+            .lng);
           if (!this.hideError) {
             this._setInvalid(this.required ? this._invalid : this._invalid && (newValue && newValue.search));
           }
         }
       },
 
-      _svalChanged: function(newValue, oldValue) {
+      _svalChanged: function (newValue, oldValue) {
         // reset the invalid property if the user has typed in the input field
 
         // if the newValue matches the selected place, which could happen if
@@ -395,7 +467,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
       },
 
 
-      _clearLocation: function(e) {
+      _clearLocation: function (e) {
         this._value = "";
       },
       /**
@@ -404,14 +476,14 @@ See README.MD for more use examples, styling, api and a link to a live demo page
        * @param  {object} options Optional - Geocoder Request options
        * @return {Promise<place>}         A promise for a place object or a status on failure
        */
-      geocode: function(address, options) {
-        return new Promise(function(resolve, reject) {
+      geocode: function (address, options) {
+        return new Promise(function (resolve, reject) {
           if (!this._geocoder) {
             reject('Geocoder not ready.');
           } else {
             var opts = options ? options : {};
             opts.address = address ? address : "";
-            this._geocoder.geocode(opts, function(results, status) {
+            this._geocoder.geocode(opts, function (results, status) {
               if (status == google.maps.GeocoderStatus.OK && results && results[0]) {
                 var p = this._extractPlaceInfo(results[0], opts.address);
                 resolve(p);
@@ -428,8 +500,8 @@ See README.MD for more use examples, styling, api and a link to a live demo page
        * @param  {object} options Optional - Geocoder Request options
        * @return {Promise<place>}         A promise for a place object or a status on failure
        */
-      reverseGeocode: function(latlng, options) {
-        return new Promise(function(resolve, reject) {
+      reverseGeocode: function (latlng, options) {
+        return new Promise(function (resolve, reject) {
           if (!this._geocoder) {
             reject('Geocoder not ready.');
           } else {
@@ -437,7 +509,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
             if (latlng) {
               opts.location = latlng;
             }
-            this._geocoder.geocode(opts, function(results, status) {
+            this._geocoder.geocode(opts, function (results, status) {
               if (status == google.maps.GeocoderStatus.OK && results && results[0]) {
                 var p = this._extractPlaceInfo(results[0], "");
                 resolve(p);
@@ -449,7 +521,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         }.bind(this));
       },
 
-      _onChangePlace: function(e) {
+      _onChangePlace: function (e) {
         var pl = this._places.getPlace();
         if (pl.geometry) {
           var p = this._extractPlaceInfo(pl, this.$.locationsearch.$.nativeInput.value);
@@ -477,7 +549,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
        * @param  PlaceResult pl google place result
        * @return place
        */
-      _extractPlaceInfo: function(pl, searchTerm) {
+      _extractPlaceInfo: function (pl, searchTerm) {
 
         var p = {
           place_id: pl.place_id,
@@ -551,7 +623,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
        * Updates the current place, value and latLng with the place provided
        * @param  IpipPlace newPlace the new place
        */
-      putPlace: function(newPlace) {
+      putPlace: function (newPlace) {
         if (newPlace && newPlace.place_id && newPlace.latLng) {
           this._setPlace(JSON.parse(JSON.stringify(newPlace)));
           this._setLatLng({
@@ -568,6 +640,12 @@ See README.MD for more use examples, styling, api and a link to a live demo page
           };
           this._value = newPlace.search;
         }
+      },
+      /**
+       * sets the focus to the input field
+       */ 
+      focus: function() {
+        this.$$('#locationsearch').$.nativeInput.focus();
       }
 
     });

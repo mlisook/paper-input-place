@@ -36,6 +36,12 @@ Basic use with validation:
 ```html
 <paper-input-place label="Pick a place" api-key="your google api key" value="{{tourstop.place}}"></paper-input-place>
 ```
+Basic use with a country code specified (use ISO Alpha-2 code):
+```html
+<paper-input-place label="kies een plaats, elke plaats" api-key="je google api sleutel" 
+  value="{{bestemming.plaats}}" search-country-code="NL">
+</paper-input-place>
+```
 
 ## Installation
 
@@ -208,12 +214,47 @@ The floating label for the paper-input.
 ### required
 Indicates to the control that selection of a place is mandatory and that an empty input is not valid.
 
+### Search Bias Properties - searchCountryCode, searchBounds, searchType
+These properties can be used to limit the autocomplete search results by country, a bounding geographic rectangle and/or by type of result.
+
+#### searchCountryCode
+You can provide an [ISO Alpha-2 Country](http://www.nationsonline.org/oneworld/country_code_list.htm) code to limit results to the given country.
+
+#### searchBounds
+`searchBounds` takes an object of the form:
+```js
+{
+  east: number,  // East longitude in degrees.
+  west: number,  // West longitude in degrees.
+  north: number, // North latitude in degrees.
+  south: number, // South latitude in degrees.  
+}
+```
+For example, this area 
+```
+{ north: 39.144342, east: 1.672126, south: 38.810722, west: 1.164008}
+```
+includes the island of Ibiza, Spain.
+
+#### searchType
+Limits results to a given result type.  Valid types are:
+* address
+* geocode
+* establishment
+* (regions) 
+* (cities)
+
 ## Methods
-Convenience functions.  While not needed for the main purpose, the user entering a place, you may have existing data you
+
+### focus()
+Sets the focus to the input field.
+
+### Convenience Functions
+While not needed for the main purpose, the user entering a place, you may have existing data you
 need to geocode for use in the element.  We make these functions available here since the Google
 API is already loaded.
 
-### geocode(address)
+#### geocode(address)
 The `geocode` function takes an address as its parameter and returns a _promise_ for a result which is a _place object_ as described in the place property above.  Note that this does not have any effect on the control's properties (but, of course one could turn around and set the value property with information from the place detail returned).
 ```js
 this.$$('paper-input-place').geocode(address).then(
@@ -225,7 +266,7 @@ this.$$('paper-input-place').geocode(address).then(
   }.bind(this)
 );
 ```
-### reverseGeocode(latLng)
+#### reverseGeocode(latLng)
 The `reverseGeocode` function takes a latLng object as it's parameter and returns a _promise_ for a result which is a _place object_ as described in the place property above.  Note that this does not have any effect on the control's properties (but, of course one could turn around and set the value property with information from the place detail returned).
 ```js
 this.$$('paper-input-place').reverseGeocode(latlng).then(
@@ -237,7 +278,7 @@ this.$$('paper-input-place').reverseGeocode(latlng).then(
   }.bind(this)
 );
 ```
-### putPlace(place)
+#### putPlace(place)
 The `putPlace` function takes a place object and updates the control to reflect that place.
 ```js
 this.$$('paper-input-place').geocode('Qualcomm Stadium').then(
@@ -305,4 +346,25 @@ Example: make the `paper-input-place` more green:
   </style>
   <paper-input-place class="make-it-green" value="{{val}}" place="{{place}}" invalid="{{inv}}" api-key="[[apiKey]]" label="Pick a place, any place" hide-error></paper-input-place>
 </template>
+```
+### Styling the Autocomplete Items List
+The list is provided by Google Places Autocomplete and can be styled by CSS classes described [here](https://google-developers.appspot.com/maps/documentation/javascript/places-autocomplete#style_autocomplete).  The trick is the styles must be in the document level (not within a custom element).
+
+Example:  Make the list garish:
+
+index.html
+```
+<style>
+    .pac-container {
+      background-color: lightblue;
+      border: 2px darkolivegreen ;
+      min-width: 450px;
+    }
+    .pac-item-query {
+      font-size: 25px;
+    }
+    .pac-item:hover {
+      background-color: lightgoldenrodyellow;
+    }
+</style>
 ```
