@@ -606,10 +606,12 @@ See README.MD for more use examples, styling, api and a link to a live demo page
             case "street_number":
               address.street_number = pl.address_components[i].short_name;
               p.basic.address = address.street_number + " " + address.route;
+              p.basic.streetNumber = address.street_number;
               break;
             case "route":
               address.route = pl.address_components[i].long_name;
               p.basic.address = address.street_number + " " + address.route;
+              p.basic.route = address.route;
               break;
             default:
               address[pl.address_components[i].types[0]] = pl.address_components[i].long_name;
