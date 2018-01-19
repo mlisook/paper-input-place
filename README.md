@@ -215,7 +215,10 @@ The floating label for the paper-input.
 ```
 #### A Note About Handling Addresses
 If you need the address and are working with a global scope you should be aware that not all countries will have a street name and number system you can rely on. For example in Japan (except in Kyoto and some Hokkaidō cities) most streets do not have names. In Ghana most rural places don't have numbers.  You may want to consider testing `place` result properties and using `formatted_address` where needed.
-  
+
+### placeholder
+Sets the `placeholder` of the underlying `input` element.
+
 ### required
 Indicates to the control that selection of a place is mandatory and that an empty input is not valid.
 
