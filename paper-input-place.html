@@ -90,7 +90,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         -->
       <iron-jsonp-library library-url="[[_gmapApiUrl]]" notify-event="map-api-load" library-loaded="{{_ijplLoaded}}" on-map-api-load="_mapsApiLoaded"></iron-jsonp-library>
     </template>
-    <paper-input id="locationsearch" label="[[label]]" value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="[[errorMessage]]">
+    <paper-input id="locationsearch" label="[[label]]" placeholder=[[placeholder]] value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="[[errorMessage]]">
       <iron-icon id="prefixicon" hidden$="[[hideIcon]]" icon="papinpplc:place" slot="prefix"></iron-icon>
       <iron-icon id="postfixicon" icon="papinpplc:clear" slot="suffix" on-tap="_clearLocation"></iron-icon>
     </paper-input>
@@ -220,6 +220,15 @@ See README.MD for more use examples, styling, api and a link to a live demo page
           type: String,
           notify: true,
           value: ""
+        },
+        /**
+         * Placeholder for paper-input
+         * @type {String}
+         */
+        placeholder: {
+            type: String,
+            notify: true,
+            value: ""
         },
         /**
          * an object - { lat: number, lng: number } - representing the geolocation of the
