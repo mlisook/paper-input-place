@@ -344,7 +344,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
       _mapsApiLoaded: function () {
         if (!this._geocoder && !this._places && this.$.locationsearch && this.$.locationsearch.$.nativeInput) {
           this._geocoder = new google.maps.Geocoder();
-          this._places = new google.maps.places.Autocomplete(this.$$('#locationsearch').$$('#nativeInput'), {});
+          this._places = new google.maps.places.Autocomplete(this.$.locationsearch.$.nativeInput, {});
           google.maps.event.addListener(this._places, 'place_changed', this._onChangePlace.bind(this));
           this._setApiLoaded(true);
           this._searchBiasChanged();
