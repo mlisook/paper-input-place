@@ -56,7 +56,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
 <dom-module id="paper-input-place">
   <template>
     <style>
-       :host {
+      :host {
         display: inline-block;
       }
 
@@ -75,6 +75,76 @@ See README.MD for more use examples, styling, api and a link to a live demo page
       iron-icon[hidden] {
         display: none !important;
       }
+
+      /* paper-input styling */
+
+      input {
+        position: relative;
+        /* to make a stacking context */
+        outline: none;
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        background: transparent;
+        border: none;
+        color: var(--paper-input-container-input-color, var(--primary-text-color));
+        -webkit-appearance: none;
+        text-align: inherit;
+        vertical-align: bottom;
+
+        /* Firefox sets a min-width on the input, which can cause layout issues */
+        min-width: 0;
+
+        @apply --paper-font-subhead;
+        @apply --paper-input-container-input;
+      }
+
+      input:disabled {
+        @apply --paper-input-container-input-disabled;
+      }
+
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        @apply --paper-input-container-input-webkit-spinner;
+      }
+
+      input::-webkit-clear-button {
+        @apply --paper-input-container-input-webkit-clear;
+      }
+
+      input::-webkit-calendar-picker-indicator {
+        @apply --paper-input-container-input-webkit-calendar-picker-indicator;
+      }
+
+      input::-webkit-input-placeholder {
+        color: var(--paper-input-container-color, var(--secondary-text-color));
+      }
+
+      input:-moz-placeholder {
+        color: var(--paper-input-container-color, var(--secondary-text-color));
+      }
+
+      input::-moz-placeholder {
+        color: var(--paper-input-container-color, var(--secondary-text-color));
+      }
+
+      input::-ms-clear {
+        @apply --paper-input-container-ms-clear;
+      }
+
+      input::-ms-reveal {
+        @apply --paper-input-container-ms-reveal;
+      }
+
+      input:-ms-input-placeholder {
+        color: var(--paper-input-container-color, var(--secondary-text-color));
+      }
+
+      label {
+        pointer-events: none;
+      }
     </style>
     <template is="dom-if" if="[[apiKey]]" restamp="true">
       <!-- 
@@ -88,12 +158,27 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         even if that control is used elsewhere in your 1.x app, the api will
         not be loaded twice.
         -->
-      <iron-jsonp-library library-url="[[_gmapApiUrl]]" notify-event="map-api-load" library-loaded="{{_ijplLoaded}}" on-map-api-load="_mapsApiLoaded"></iron-jsonp-library>
+      <iron-jsonp-library id="ijpl" library-url="[[_gmapApiUrl]]" notify-event="map-api-load" on-map-api-load="_mapsApiLoaded"></iron-jsonp-library>
     </template>
-    <paper-input id="locationsearch" label="[[label]]" placeholder=[[placeholder]] value="{{_value}}" invalid="[[invalid]]" disabled$="[[disabled]]" error-message="[[errorMessage]]">
+
+    <paper-input-container id="container" disabled$="[[disabled]]" invalid="[[invalid]]">
+
       <iron-icon id="prefixicon" hidden$="[[hideIcon]]" icon="papinpplc:place" slot="prefix"></iron-icon>
+
+      <label hidden$="[[!label]]" aria-hidden="true" for="pipIronInput" slot="label">[[label]]</label>
+
+      <iron-input bind-value="{{_value}}" slot="input" class="input-element" id="locationsearch" invalid="{{invalid}}">
+        <input id="nativeInput" disabled$="[[disabled]]" inputmode="text" placeholder$="[[placeholder]]" on-change="_onChange">
+      </iron-input>
+
       <iron-icon id="postfixicon" icon="papinpplc:clear" slot="suffix" on-tap="_clearLocation"></iron-icon>
-    </paper-input>
+
+      <template is="dom-if" if="[[errorMessage]]">
+        <paper-input-error aria-live="assertive" slot="add-on">[[errorMessage]]</paper-input-error>
+      </template>
+
+    </paper-input-container>
+
   </template>
 
   <script>
@@ -173,7 +258,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         searchBounds: {
           type: Object
         },
-        
+
         /**
          * bias search results by type
          * permitted values: 
@@ -226,9 +311,9 @@ See README.MD for more use examples, styling, api and a link to a live demo page
          * @type {String}
          */
         placeholder: {
-            type: String,
-            notify: true,
-            value: ""
+          type: String,
+          notify: true,
+          value: ""
         },
         /**
          * an object - { lat: number, lng: number } - representing the geolocation of the
@@ -314,15 +399,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
           type: String,
           notify: true,
           computed: '_computeUrl(apiKey)'
-        },
-        /** 
-         * @private
-         * jsonp loaded bool
-         */
-        _ijplLoaded: {
-          type: Boolean
         }
-
       },
 
       observers: [
@@ -337,14 +414,14 @@ See README.MD for more use examples, styling, api and a link to a live demo page
       },
 
       _computeUrl: function (akey) {
-        return "https://maps.googleapis.com/maps/api/js?callback=%%callback%%&v=3.exp&libraries=drawing,geometry,places,visualization&key=" +
-          akey;
+        return akey? "https://maps.googleapis.com/maps/api/js?callback=%%callback%%&v=3.exp&libraries=drawing,geometry,places,visualization&key=" +
+          akey : "";
       },
 
       _mapsApiLoaded: function () {
-        if (!this._geocoder && !this._places && this.$.locationsearch && this.$.locationsearch.$.nativeInput) {
+        if (!this._geocoder && !this._places && this.$.locationsearch && this.$.nativeInput) {
           this._geocoder = new google.maps.Geocoder();
-          this._places = new google.maps.places.Autocomplete(this.$.locationsearch.$.nativeInput, {});
+          this._places = new google.maps.places.Autocomplete(this.$.nativeInput, {});
           google.maps.event.addListener(this._places, 'place_changed', this._onChangePlace.bind(this));
           this._setApiLoaded(true);
           this._searchBiasChanged();
@@ -533,7 +610,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
       _onChangePlace: function (e) {
         var pl = this._places.getPlace();
         if (pl.geometry) {
-          var p = this._extractPlaceInfo(pl, this.$.locationsearch.$.nativeInput.value);
+          var p = this._extractPlaceInfo(pl, this.$.nativeInput.value);
           this._setPlace(p);
           this._invalid = false;
           this._setInvalid(false);
@@ -541,9 +618,9 @@ See README.MD for more use examples, styling, api and a link to a live demo page
             lat: p.latLng.lat,
             lng: p.latLng.lng
           });
-          this._value = this.$.locationsearch.$.nativeInput.value;
+          this._value = this.$.nativeInput.value;
           this.value = {
-            search: this.$.locationsearch.$.nativeInput.value,
+            search: this.$.nativeInput.value,
             place_id: p.place_id,
             latLng: {
               lat: p.latLng.lat,
@@ -654,10 +731,26 @@ See README.MD for more use examples, styling, api and a link to a live demo page
       },
       /**
        * sets the focus to the input field
-       */ 
-      focus: function() {
-        this.$$('#locationsearch').$.nativeInput.focus();
-      }
+       */
+      focus: function () {
+        this.$.nativeInput.focus();
+      },
+
+
+      _onChange: function (event) {
+        // In the Shadow DOM, the `change` event is not leaked into the
+        // ancestor tree, so we must do this manually.
+        // See https://w3c.github.io/webcomponents/spec/shadow/#events-that-are-not-leaked-into-ancestor-trees.
+        if (this.shadowRoot) {
+          this.fire(event.type, {
+            sourceEvent: event
+          }, {
+            node: this,
+            bubbles: event.bubbles,
+            cancelable: event.cancelable
+          });
+        }
+      },
 
     });
     /**
