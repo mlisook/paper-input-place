@@ -370,6 +370,34 @@ See README.MD for more use examples, styling, api and a link to a live demo page
           notify: true,
           value: false
         },
+        /** 
+         * Sets the desired language for the input and the autocomplete list.
+         * Normally, Google Places Autocomplete defaults to the browser default language.
+         * This value allows the language to be set to a desired language regardless of the browser default.
+         * 
+         * For a list of language codes supported see https://developers.google.com/maps/faq#languagesupport
+         * 
+         * *** the value should not be modified after the element is loaded ***
+         */
+        language: {
+          type: String,
+          value: ""
+        },
+        /** 
+         * If true, the element does not load the drawing, geometry or visualization libraries, slightly
+         * reducing overall payload size.
+         * 
+         * Important: Do not use this option if the page contains other elements that make usef
+         * of the Google Maps Javascript API (e.g. google-map).  This can cause the maps API to be loaded
+         * more than once generating errors.
+         *
+         * Do not change this value after the element is loaded
+         * 
+         */
+        minimizeApi: {
+          type: Boolean,
+          value: false
+        },
         /**
          * An object representing the initial or returned value of the control.
          * ```
@@ -398,7 +426,7 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         _gmapApiUrl: {
           type: String,
           notify: true,
-          computed: '_computeUrl(apiKey)'
+          computed: '_computeUrl(apiKey,language,minimizeApi)'
         }
       },
 
@@ -413,9 +441,10 @@ See README.MD for more use examples, styling, api and a link to a live demo page
         }
       },
 
-      _computeUrl: function (akey) {
-        return akey? "https://maps.googleapis.com/maps/api/js?callback=%%callback%%&v=3.exp&libraries=drawing,geometry,places,visualization&key=" +
-          akey : "";
+      _computeUrl: function (akey, lang, minApi) {
+        return akey ? ("https://maps.googleapis.com/maps/api/js?callback=%%callback%%&v=3.exp&libraries=" +
+          (minApi ? "places" : "drawing,geometry,places,visualization") +
+          "&key=" + akey + (lang ? "&language=" + lang : "")) : "";
       },
 
       _mapsApiLoaded: function () {

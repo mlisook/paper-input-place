@@ -252,6 +252,26 @@ Limits results to a given result type.  Valid types are:
 * (regions) 
 * (cities)
 
+#### language
+Sets the input and autocomplete list preferred language.  The default is the user's preferred language setting in the browser (see [Google Maps Api Localizing](https://developers.google.com/maps/documentation/javascript/localization)).
+
+Specify the language as a [supported language code](https://developers.google.com/maps/faq#languagesupport).
+
+It should also be noted that Google does not have a translation for every place name in the world in every supported language.
+
+If you use this attribute you must set it when the element is initialized or at least before the `apiKey` is set.
+
+If you use this attribute you must also set the `language` attribute to the same value on any other element that may load the Google Maps API (e.g. `google-map`) or you will generate API loaded twice errors.
+
+#### minimizeApi
+If true, the element does not load the drawing, geometry or visualization libraries, slightly reducing payload size.
+
+Do not set this attribute if your page includes other elements that use the Google Maps Javascript API (e.g. `google-map`) as those elements will attempt to load all libraries, generating API loaded twice errors.
+
+The default value, `false`, is compatible with the api set used by the Google Elements collection.
+
+If you use this attribute you must set it when the element is initialized or at least before the `apiKey` is set.
+
 ## Methods
 
 ### focus()
