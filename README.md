@@ -1,17 +1,25 @@
 # paper-input-place
 
-Google Places Autocomplete attached to a paper-input, providing a convenient material design input for places.
+Google Places Autocomplete styled as a paper-input, providing a convenient material design input for places.
 
-This release is a Polymer 2.0 hybrid element so it will work in 1.x or 2.0 Polymer applications.
+The element is available as a Polymer 2.0 hybrid element for Polymer 1.x or 2.x projects, and as Polymer 3.0 class based module for Polymer 3.x projects.
 
 Try it on the [Live Demos](https://mlisook.github.io/paper-input-place/) page.
 
 ## Contents
-* [Basic Use](#basic-use)
 * [Installation](#installation)
+* [Basic Use](#basic-use)
 * [Properties](#additional-properties)
 * [Methods](#methods)
 * [Styling](#styling)
+
+## Installation
+### For Polymer 2.x or 1.x Projects
+Use bower to install:
+`bower install --save paper-input-place#^1.9.12`
+
+### For Polymer 3.x Projects
+`npm i --save paper-input-place'
 
 ## Basic use
 
@@ -42,11 +50,6 @@ Basic use with a country code specified (use ISO Alpha-2 code):
   value="{{bestemming.plaats}}" search-country-code="NL">
 </paper-input-place>
 ```
-
-## Installation
-
-Use bower to install:
-`bower install --save paper-input-place`
 
 ## Additional Properties
 ### apiLoaded
