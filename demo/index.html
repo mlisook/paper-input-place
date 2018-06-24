@@ -1,26 +1,35 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>paper-input-place demo</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="../../polymer/polymer.html" />
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <link rel="import" href="demo-pip.html" />
+    <title>paper-input-place demo</title>
 
-    <style is="custom-style" include="demo-pages-shared-styles">
-    </style>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="hljs/highlight.pack.js"></script>
+    <script type="module">
+      import '@polymer/iron-demo-helpers/demo-pages-shared-styles';
+      import '@polymer/iron-demo-helpers/demo-snippet';
+      import './demo-pip.js';
+      import './demo-show-object.js';
+    </script>
+
+    <script type="module" src="../paper-input-place.js"></script>
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
   </head>
   <body>
-
     <div class="vertical-section-container centered">
-      <h3>Basic paper-input-place Demo</h3>
-      
-    <demo-pip></demo-pip>
+      <h3>Basic paper-input-place demo</h3>
+      <demo-snippet>
+        <template>
+         <demo-pip></demo-pip>
+        </template>
+      </demo-snippet>
     </div>
-
   </body>
 </html>

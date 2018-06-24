@@ -2,7 +2,7 @@
 
 Google Places Autocomplete styled as a paper-input, providing a convenient material design input for places.
 
-The element is available as a Polymer 2.0 hybrid element for Polymer 1.x or 2.x projects, and as Polymer 3.0 class based module for Polymer 3.x projects.
+The element is available as a Polymer 3.0 class based module or as a Polymer 2 hybrid supporting Polymer 2.x and 1.x projects.
 
 Try it on the [Live Demos](https://mlisook.github.io/paper-input-place/) page.
 
@@ -12,14 +12,26 @@ Try it on the [Live Demos](https://mlisook.github.io/paper-input-place/) page.
 * [Properties](#additional-properties)
 * [Methods](#methods)
 * [Styling](#styling)
+* [Support / Issues](#support)
+* [Contributing](#contributing)
+* [License](#license)
+
 
 ## Installation
-### For Polymer 2.x or 1.x Projects
-Use bower to install:
-`bower install --save paper-input-place#^1.9.12`
+### For Polymer 3.x Projects 
+Use `npm` or `yarn` to install:
+```
+npm i --save paper-input-place
+// or using yarn
+yarn add paper-input-place
+```
 
-### For Polymer 3.x Projects
-`npm i --save paper-input-place'
+### For Polymer 1.x or 2.x projects
+Use bower to install.  ***Important*** - the polymer 1.x/2.x versions are 1.9.xxx
+
+```
+bower install --save paper-input-place#^1.9.12
+```
 
 ## Basic use
 
@@ -50,6 +62,7 @@ Basic use with a country code specified (use ISO Alpha-2 code):
   value="{{bestemming.plaats}}" search-country-code="NL">
 </paper-input-place>
 ```
+
 
 ## Additional Properties
 ### apiLoaded
@@ -399,3 +412,12 @@ index.html
     }
 </style>
 ```
+
+## Support
+Support is available for both the Polymer 2.x/1.x version and the Polymer 3.x version of `paper-input-place'.  You may submit issues in the [github repository](https://github.com/mlisook/paper-input-place).  I strive to address issues within one day.
+
+## Contributing
+Contributions via pull request are certainly welcome and appreciated.
+
+## License
+MIT
