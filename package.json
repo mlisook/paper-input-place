@@ -1,0 +1,12 @@
+{
+  "name": "plastic-map-info-demo",
+  "version": "1.0.0",
+  "description": "demonstration pages",
+  "main": "index.js",
+  "repository": "https://github.com/mlisook/plastic-map-info.git",
+  "author": "Murray Lisook <murray@lisook.net>",
+  "license": "MIT",
+  "dependencies": {
+    "plastic-diff-redirect": "^1.0.1"
+  }
+}
