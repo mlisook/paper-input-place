@@ -10,8 +10,8 @@
     "geocode",
     "reverse-geocode"
   ],
-  "name": "@polymer/paper-input-place",
-  "version": "2.0.0",
+  "name": "paper-input-place",
+  "version": "2.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/mlisook/paper-input-place.git"
